@@ -1,0 +1,9 @@
+version: "3.3"
+
+services:
+
+  vault-u:
+    volumes: 
+      - "./vault-unlock.hcl:/vault/config/vault.hcl:ro"
+      - "./vault-unlock-seal.hcl:/vault/config/vault-seal.hcl:ro"
+      - "./vault-with-seal:/vault/file"

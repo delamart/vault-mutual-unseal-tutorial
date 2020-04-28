@@ -1,0 +1,18 @@
+version: "3.3"
+
+services:
+    
+  vault-init:
+    build:
+      context: .
+      dockerfile: vault-init.dockerfile
+    command: 
+      - ~/vault-u-init.sh
+    volumes: 
+      - "./vault.env:/home/vault/vault.env"
+      - "./vault-u.env:/home/vault/vault-u.env"
+      - "./secrets:/home/vault/secrets"
+      - "./vault:/vault/file"
+      - "./vault-with-seal:/vault/file-with-seal"
+    networks: 
+      - net 

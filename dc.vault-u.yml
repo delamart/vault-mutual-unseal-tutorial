@@ -1,0 +1,21 @@
+version: "3.3"
+
+services:
+
+  vault-u:
+    image: "vault:latest"
+    container_name: "vault-u"
+    command:
+      - server
+    ports: 
+      - "8200:8200"
+    environment:
+      VAULT_ADDR: "http://127.0.0.1:8200"
+    env_file: 
+      - vault-u.env
+    volumes: 
+      - "./vault-unlock.hcl:/vault/config/vault.hcl:ro"
+      - "./vault:/vault/file"
+      - "./vault-with-seal:/vault/file-with-seal"
+    networks: 
+      - net

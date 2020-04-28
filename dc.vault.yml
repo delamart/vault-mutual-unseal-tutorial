@@ -1,0 +1,23 @@
+version: "3.3"
+
+services:
+    
+  vault:
+    image: "vault:latest"
+    command:
+      - server
+    depends_on:
+      - db
+    environment:
+      VAULT_ADDR: "http://127.0.0.1:8200"
+    env_file: 
+      - vault.env
+    volumes: 
+      - "./vault.hcl:/vault/config/vault.hcl:ro"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.vault.rule=Host(`vault.localhost`)"
+      - "traefik.http.routers.vault.entrypoints=web"    
+      - "traefik.http.services.vault.loadbalancer.server.port=8200"
+    networks: 
+      - net 
