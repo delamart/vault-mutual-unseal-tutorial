@@ -6,7 +6,7 @@ You'll need:
 - docker
 - docker-compose
 
-For this tutorial you'll need to setup the local hostname `vault.localhost` in your `hosts` file and point it to 127.0.0.1.
+For this tutorial you'll need to setup the local hostname `vault.localhost` in your `hosts` file and point it to `127.0.0.1`.
 
 ## STEPS
 
