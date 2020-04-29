@@ -69,7 +69,7 @@ Recreating vault-u ... done
 ```
 Visit http://vault.localhost:8200/ui/
 
-### Step 5
+### Scaling
 
 ```
 > docker-compose -f docker-compose.yml -f dc.vault-u.yml -f dc.vault.yml -f dc.seal.yml up -d --scale vault=2
@@ -86,7 +86,7 @@ Stopping and removing vault-u       ... done
 Stopping and removing vault_vault_2 ... done
 Starting vault_vault_1              ... done
 
-> docker-compose -f docker-compose.yml -f dc.vault-u.yml -f dc.vault.yml -f dc.seal.yml up -
+> docker-compose -f docker-compose.yml -f dc.vault-u.yml -f dc.vault.yml -f dc.seal.yml up -d
 mysql is up-to-date
 traefik is up-to-date
 vault_vault_1 is up-to-date
