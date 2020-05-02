@@ -1,4 +1,8 @@
-# README
+# Vault mutual unseal
+
+Here is how you can setup two seperate vaults to mutually unseal each other using the transit secret engine.
+
+![](docker.png)
 
 ## Requirements
 
@@ -8,9 +12,11 @@ You'll need:
 
 For this tutorial you'll need to setup the local hostname `vault.localhost` in your `hosts` file and point it to `127.0.0.1`.
 
-## STEPS
+## Tutorial
 
-### Step 0
+### Pull and Build
+
+Let's start by pulling the required images and building the vault-cli image used for our scripts.
 
 ```
 > docker-compose -f docker-compose.yml -f dc.vault-cli.yml pull
@@ -21,7 +27,10 @@ Pulling vault-cli  ... done
 ```
 
 
-### Step 1
+### Start the LB and DB
+
+First we setup a MySQL database and traefik load balancer so we can test a highly available setup for our main vault images.
+This will then allow us to simulate scaling the vault cluster up and down and testing it's resilience.
 
 ```
 > docker-compose up -d
@@ -29,9 +38,18 @@ Creating network "vault_net" with the default driver
 Creating traefik ... done
 Creating mysql   ... done
 ```
-Wait for `mysqld: ready for connections.`
+:warning: Make sure you wait for MySQL to be ready by checking the logs for `mysqld: ready for connections.`
 
-### Step 2
+### Start the unlock-vault
+
+Now we'll start the first vault instance. This will be our "unlock vault" (vault-u). This is the vault instance who's sole job
+is to unlock the other vaults. The `vault-u-init.sh` script will initialize the vault instance as well as unseal it and then
+setup the transit engine, key and a token to unlock our main vault. You will find the unseal key and root token in `secrets/init-u.json`.
+The token used by the main vault to connect to our vault-u is stored under `secrets/token.json` and is copied into `vault.env` so
+it can be loaded as an ENV variable by the main vault.
+
+:zap: The `vault-u-init.sh` script will also create a copy of the unlock vault's files from `vault/*` to `vault-with-seal/*` which we 
+can later use to recover if both vaults are down, as the transit key will be backed-up.
 
 ```
 > docker-compose -f docker-compose.yml -f dc.vault-u.yml up -d
@@ -41,9 +59,14 @@ Creating vault-u ... done
 
 > docker-compose -f docker-compose.yml -f dc.vault-u.yml -f dc.vault-cli.yml run --rm vault-cli /home/vault/vault-u-init.sh
 ```
-Visit http://vault.localhost:8200/ui/
+:heavy_check_mark: You can now visit http://vault.localhost:8200/ui/ and see that the vault is initialized and unsealed.
 
-### Step 3
+### Sart the main vault
+
+We can now start our main vault instance. This will be the HA one which is connected to the MySQL database. The `vault-init.sh` script
+will initialize the vault and setup the transit engine, key and a token to unlock the unlock vault. You will find the recover key
+and root token in `secrets/init.json`. The token used by the unlock vault to connect to our main vault is stored under 
+`secrets/token-u.json` and is copied to `vault-u.env` so it can be loaded as an ENV variable by the unlock vault.
 
 ```
 > docker-compose -f docker-compose.yml -f dc.vault-u.yml -f dc.vault.yml up -d
@@ -54,9 +77,13 @@ Creating vault_vault_1 ... done
 
 > docker-compose -f docker-compose.yml -f dc.vault-u.yml -f dc.vault.yml -f dc.vault-cli.yml run --rm vault-cli /home/vault/vault-init.sh
 ```
-Visit http://vault.localhost/ui/
+:heavy_check_mark: You can now visit http://vault.localhost/ui/ and see that our main vault is also initialized and has been
+automatically unsealed.
 
-### Step 4
+### Mgrate to autounseal
+
+Now let's migrate the unlock vault from SHAMIR keys to autounseal using the transit key setup in our main vault. The `migrate.sh` script
+will use the existing unseal key from `secrets/init-u.json` to migrate the seal.
 
 ```
 > docker-compose -f docker-compose.yml -f dc.vault-u.yml -f dc.vault.yml -f dc.seal.yml up -d
@@ -67,9 +94,12 @@ Recreating vault-u ... done
 
 > docker-compose -f docker-compose.yml -f dc.vault-u.yml -f dc.vault.yml -f dc.vault-cli.yml run --rm vault-cli /home/vault/migrate.sh
 ```
-Visit http://vault.localhost:8200/ui/
+:heavy_check_mark: You can now visit http://vault.localhost:8200/ui/ and see that our unlock vault is again ready.
 
 ### Scaling
+
+We can now try scaling the main vault up to two instances to show that both will be automatically unsealed.
+You can also scale down the unlock vault to 0 (deleting it) and then bring it back up to see that it will also automaticlly unseal.
 
 ```
 > docker-compose -f docker-compose.yml -f dc.vault-u.yml -f dc.vault.yml -f dc.seal.yml up -d --scale vault=2
@@ -94,8 +124,12 @@ Creating vault-u ... done
 
 ```
 
-
 ### Recovery
+
+:boom: One of the main issues with mutual auto-unseal is what happens when both vaults are down. If you bring them back up both will
+fail as you need one to be unsealed to unlock the other. The solution here is the restore the backup we made before migrating to the
+transit seal. This way we can go back to a version of the unlock vault that still has the same transit key but can be unlocked
+manually using it's original unseal key.
 
 ```
 > docker-compose up -d --remove-orphans
@@ -125,6 +159,7 @@ Recreating vault-u ... done
 ```
 
 ## Cleanup
+
 ```
 > docker-compose.exe down --remove-orphans
 > rm -rf db/*
