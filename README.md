@@ -163,7 +163,7 @@ Recreating vault-u ... done
 ## Cleanup
 
 ```
-> docker-compose.exe down --remove-orphans
+> docker-compose down --remove-orphans
 > rm -rf db/*
 > rm -rf vault/*
 > rm -rf vault-with-seal/*
