@@ -1,0 +1,6 @@
+# Working directories
+/db/*
+/secrets/*
+/vault/*
+/vault-with-seal/*
+!/*/.gitkeep
