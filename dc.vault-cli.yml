@@ -2,7 +2,7 @@ version: "3.3"
 
 services:
     
-  vault-init:
+  vault-cli:
     build:
       context: .
       dockerfile: vault-cli.dockerfile
