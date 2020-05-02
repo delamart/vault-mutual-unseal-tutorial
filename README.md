@@ -101,7 +101,7 @@ Recreating vault-u ... done
 ### Scaling
 
 We can now try scaling the main vault up to two instances to show that both will be automatically unsealed.
-You can also scale down the unlock vault to 0 (deleting it) and then bring it back up to see that it will also automaticlly unseal.
+You can also scale down the unlock vault to 0 (deleting it) and then bring it back up to see that it will also automatically unseal.
 
 ```
 > docker-compose -f docker-compose.yml -f dc.vault-u.yml -f dc.vault.yml -f dc.seal.yml up -d --scale vault=2
@@ -129,7 +129,7 @@ Creating vault-u ... done
 ### Recovery
 
 :boom: One of the main issues with mutual auto-unseal is what happens when both vaults are down. If you bring them back up both will
-fail as you need one to be unsealed to unlock the other. The solution here is the restore the backup we made before migrating to the
+fail as you need one to be unsealed to unlock the other. The solution here is to restore the backup we made before migrating to the
 transit seal. This way we can go back to a version of the unlock vault that still has the same transit key but can be unlocked
 manually using it's original unseal key.
 
@@ -169,3 +169,8 @@ Recreating vault-u ... done
 > rm -rf vault-with-seal/*
 > rm -rf secrets/*
 ```
+
+## Source
+
+- This tutorial is hosted on github : https://github.com/delamart/vault-mutual-unseal-tutorial
+- Author : [Erik De Lamarter](https://delamart.github.io/)
