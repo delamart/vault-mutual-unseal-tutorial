@@ -13,11 +13,11 @@ For this tutorial you'll need to setup the local hostname `vault.localhost` in y
 ### Step 0
 
 ```
-> docker-compose -f docker-compose.yml -f dc.vault-init.yml pull
+> docker-compose -f docker-compose.yml -f dc.vault-cli.yml pull
 Pulling db         ... done
 Pulling traefik    ... done
-Pulling vault-init ... done
-> docker-compose -f docker-compose.yml -f dc.vault-init.yml build
+Pulling vault-cli  ... done
+> docker-compose -f docker-compose.yml -f dc.vault-cli.yml build
 ```
 
 
@@ -39,7 +39,7 @@ traefik is up-to-date
 mysql is up-to-date
 Creating vault-u ... done
 
-> docker-compose -f docker-compose.yml -f dc.vault-u.yml -f dc.vault-init.yml run --rm vault-init /home/vault/vault-u-init.sh
+> docker-compose -f docker-compose.yml -f dc.vault-u.yml -f dc.vault-cli.yml run --rm vault-cli /home/vault/vault-u-init.sh
 ```
 Visit http://vault.localhost:8200/ui/
 
@@ -52,7 +52,7 @@ vault-u is up-to-date
 mysql is up-to-date
 Creating vault_vault_1 ... done
 
-> docker-compose -f docker-compose.yml -f dc.vault-u.yml -f dc.vault.yml -f dc.vault-init.yml run --rm vault-init /home/vault/vault-init.sh
+> docker-compose -f docker-compose.yml -f dc.vault-u.yml -f dc.vault.yml -f dc.vault-cli.yml run --rm vault-cli /home/vault/vault-init.sh
 ```
 Visit http://vault.localhost/ui/
 
@@ -65,7 +65,7 @@ Recreating vault-u ...
 traefik is up-to-date
 Recreating vault-u ... done
 
-> docker-compose -f docker-compose.yml -f dc.vault-u.yml -f dc.vault.yml -f dc.vault-init.yml run --rm vault-init /home/vault/migrate.sh
+> docker-compose -f docker-compose.yml -f dc.vault-u.yml -f dc.vault.yml -f dc.vault-cli.yml run --rm vault-cli /home/vault/migrate.sh
 ```
 Visit http://vault.localhost:8200/ui/
 
@@ -109,7 +109,7 @@ mysql is up-to-date
 traefik is up-to-date
 Creating vault-u ... done
 
-> docker-compose -f docker-compose.yml -f dc.vault-u.yml -f dc.vault-init.yml run --rm vault-init /home/vault/unseal.sh
+> docker-compose -f docker-compose.yml -f dc.vault-u.yml -f dc.vault-cli.yml run --rm vault-cli /home/vault/unseal.sh
 
 > docker-compose -f docker-compose.yml -f dc.vault-u.yml -f dc.vault.yml up -d
 vault-u is up-to-date

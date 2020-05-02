@@ -5,7 +5,7 @@ services:
   vault-init:
     build:
       context: .
-      dockerfile: vault-init.dockerfile
+      dockerfile: vault-cli.dockerfile
     command: 
       - ~/vault-u-init.sh
     volumes: 
