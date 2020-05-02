@@ -82,7 +82,7 @@ Creating vault_vault_1 ... done
 :heavy_check_mark: You can now visit http://vault.localhost/ui/ and see that our main vault is also initialized and has been
 automatically unsealed.
 
-### Mgrate to autounseal
+### Migrate to autounseal
 
 Now let's migrate the unlock vault from SHAMIR keys to autounseal using the transit key setup in our main vault. The `migrate.sh` script
 will use the existing unseal key from `secrets/init-u.json` to migrate the seal.
