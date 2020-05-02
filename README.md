@@ -4,6 +4,8 @@ Here is how you can setup two seperate vaults to mutually unseal each other usin
 
 ![](docker.png)
 
+Hashicorp vault website: https://www.vaultproject.io
+
 ## Requirements
 
 You'll need:
